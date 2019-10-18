@@ -5,7 +5,7 @@ Representation of a generic Docker container
 import logging
 import tarfile
 import tempfile
-
+import os
 import docker
 
 from samcli.local.docker.attach_api import attach
@@ -87,6 +87,7 @@ class Container(object):
             raise RuntimeError("This container already exists. Cannot create again.")
 
         LOG.info("Mounting %s as %s:ro,delegated inside runtime container", self._host_dir, self._working_dir)
+        LOG.info("Mounting %s as %s:ro,delegated inside runtime container", "home/velaseriat/.m2", "/.m2")
 
         kwargs = {
             "command": self._cmd,
@@ -97,6 +98,13 @@ class Container(object):
                     # https://docs.docker.com/storage/bind-mounts
                     # Mount the host directory as "read only" inside container
                     "bind": self._working_dir,
+                    "mode": "ro,delegated",
+                },
+                "/home/velaseriat/.m2": {
+                    # Mount the host directory as "read only" directory inside container at working_dir
+                    # https://docs.docker.com/storage/bind-mounts
+                    # Mount the host directory as "read only" inside container
+                    "bind": "/.m2",
                     "mode": "ro,delegated",
                 }
             },
